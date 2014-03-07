@@ -10,10 +10,10 @@ def docx2html(path):
     return pydocx.Docx2Html(path).parsed
 
 def docx2markdown(path):
-    return pydocx.Docx2Markdown(path).parsed
+    return pydocx.Docx2Markdown(path, True).parsed
 
 def main():
-    print docx2html("test.docx")
+    print docx2markdown("test.docx")
 
 if __name__ == '__main__':
     main()

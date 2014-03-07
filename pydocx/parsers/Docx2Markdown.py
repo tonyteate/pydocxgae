@@ -13,6 +13,7 @@ class Docx2Markdown(DocxParser):
             convert_root_level_upper_roman=False,
             *args,
             **kwargs):
+        self.md_tab = "&nbsp;&nbsp;&nbsp;&nbsp;" # 4 space indent
         self._for_html = for_html
         super(Docx2Markdown, self).__init__(path, *args, **kwargs)
 
@@ -37,7 +38,7 @@ class Docx2Markdown(DocxParser):
 
     def heading(self, text, heading_value):
         print "HEADING: %s"%heading_value
-        return text
+        return text + '  \n'
 
     def insertion(self, text, author, date):
         pass
@@ -99,10 +100,9 @@ class Docx2Markdown(DocxParser):
         return text
 
     def tab(self):
-        # Insert before the text right?? So got the text and just do an insert
-        # at the beginning!
+        text = ''
         if self.for_html:
-            text = '&nbsp;&nbsp;&nbsp;&nbsp;' + text
+            text = self.md_tab + text
         return text
 
     def table(self, text):
@@ -118,9 +118,28 @@ class Docx2Markdown(DocxParser):
         return '-----------------------'
 
     def indent(self, text, just='', firstLine='', left='', right=''):
+        #only left justified calculation for now
         if self.for_html:
-            text = '&nbsp;&nbsp;&nbsp;&nbsp;' + text
+
+            tabno = 0
+
+            if just == 'left' or not just:
+
+                flno, lno = 0, 0
+
+                if firstLine:
+                    flpt = float(firstLine) * float(3) / float(4)
+                    flno = int(flpt) / 36 #hardcoded?
+                if left:
+                    lpt = float(left) * float(3) / float(4)
+                    lno = int(lpt) / 36 #hardcoded?
+
+                tabno = flno + lno
+
+                text = tabno*self.md_tab + text
+
         return text
 
     def break_tag(self):
-        return ''
+        #expected paragraph?
+        return '  \n'
