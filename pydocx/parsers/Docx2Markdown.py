@@ -25,7 +25,7 @@ class Docx2Markdown(DocxParser):
     def parsed(self):
         return self._parsed
 
-    def escape(self, text): #?
+    def escape(self, text):
         if self.for_html:
             return xml.sax.saxutils.quoteattr(text)[1:-1]
         return text
@@ -65,16 +65,14 @@ class Docx2Markdown(DocxParser):
         return '- ' + text + '\n'
 
     def ordered_list(self, text, list_style):
-        print text
-        return '\n' + text
+        return '\n'+text+'\n` `  \n' # spacing hack to make sure lists render
 
     def unordered_list(self, text):
-        print text
-        return '\n' + text
+        return '\n'+text+'\n` `  \n' # spacing hack to make sure lists render
 
     def bold(self, text):
-        #rather than stripping whitespace, move it outside of asterisks
-        #can probably be better
+        # rather than stripping whitespace, move it outside of asterisks
+        # can probably be better
         if text.strip():
             if text != text.rstrip():
                 text = text.rstrip() + '** '
@@ -92,8 +90,8 @@ class Docx2Markdown(DocxParser):
         # TODO do we need a "pre" variable, so I can check for
         # *italics**italics* and turn it into *italicsitatlics*?
 
-        #rather than stripping whitespace, move it outside of asterisks
-        #can probably be better        
+        # rather than stripping whitespace, move it outside of asterisks
+        # can probably be better        
         if text.strip():
             if text != text.rstrip():
                 text = text.rstrip() + '* '
@@ -108,6 +106,7 @@ class Docx2Markdown(DocxParser):
 
     def underline(self, text):
         # return '***' + text + '***'
+        # conflicts w/ bold italic
         return text
 
     def caps(self, text):
@@ -129,7 +128,7 @@ class Docx2Markdown(DocxParser):
         return text
 
     def tab(self):
-        #str.expandtabs()
+        # str.expandtabs()?
         text = ''
         if self.for_html:
             text = self.md_tab + text
@@ -148,7 +147,7 @@ class Docx2Markdown(DocxParser):
         return '- - - -'
 
     def indent(self, text, just='', firstLine='', left='', right=''):
-        #only left justified calculation for now
+        # only left justified calculation for now
         if self.for_html:
 
             tabno = 0
@@ -159,10 +158,10 @@ class Docx2Markdown(DocxParser):
 
                 if firstLine:
                     flpt = float(firstLine) * float(3) / float(4)
-                    flno = int(flpt) / 36 #hardcoded?
+                    flno = int(flpt) / 36 # hardcoded?
                 if left:
                     lpt = float(left) * float(3) / float(4)
-                    lno = int(lpt) / 36 #hardcoded?
+                    lno = int(lpt) / 36 # hardcoded?
 
                 tabno = flno + lno
 
@@ -171,5 +170,5 @@ class Docx2Markdown(DocxParser):
         return text
 
     def break_tag(self):
-        #expected paragraph?
+        # expected paragraph?
         return '  \n'
