@@ -44,7 +44,9 @@ class Docx2Markdown(DocxParser):
         pass
 
     def hyperlink(self, text, href):
-        return text
+        if text == '':
+            return ''
+        return '[%s](%s "%s")'%(text, href, text)
 
     def image_handler(self, image_data, filename):
         return text
@@ -136,22 +138,20 @@ class Docx2Markdown(DocxParser):
         return text
 
     def table(self, text):
-        print "table: %s" %text
         rows = text.splitlines()
-        nocells = len(rows[0].split('|'))
-        hrow = '---|---'*(nocells-1)
-        rows = [rows[0], hrow]+rows[1:]
+        firstrow = rows[0]
+        firstrowcells = firstrow.split('|')
+        nocells = len(firstrowcells)-1
+        headrow = '-----|'*(nocells)
+        rows = [rows[0], headrow]+rows[1:]
         return '\n'.join(rows)+'\n'
+        # return text+'\n'
 
     def table_row(self, text):
-        print "table row: %s" %text
-        cells = text.split('|')
-        cells = [cell for cell in cells if cell.strip()]
-        return '|'.join(cells)+'\n'
+        return text+'\n'
 
     def table_cell(self, text, col='', row=''):
-        print "table cell: '%s'" %text
-        return '|'+text
+        return text+'|'
 
     def page_break(self):
         return '- - - -'
