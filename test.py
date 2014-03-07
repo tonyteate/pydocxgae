@@ -13,7 +13,7 @@ def docx2markdown(path):
     return pydocx.Docx2Markdown(path, True).parsed
 
 def main():
-    print docx2markdown("test.docx")
+    print docx2markdown("table.docx")
 
 if __name__ == '__main__':
     main()

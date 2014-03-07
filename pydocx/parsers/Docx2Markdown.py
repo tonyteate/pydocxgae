@@ -66,10 +66,10 @@ class Docx2Markdown(DocxParser):
 
     def ordered_list(self, text, list_style):
         text = '\n'.join([line.replace('-',"%s."%i) for i, line in enumerate(text.splitlines(), 1)])
-        return '\n'+text+'\n\n` `  \n' # spacing hack to make sure lists render
+        return '\n'+text+'\n\n[]()  \n' # spacing hack to make sure lists render properly
 
     def unordered_list(self, text):
-        return '\n'+text+'\n` `  \n' # spacing hack to make sure lists render
+        return '\n'+text+'\n[]()  \n' # spacing hack to make sure lists render properly
 
     def bold(self, text):
         # rather than stripping whitespace, move it outside of asterisks
@@ -136,13 +136,22 @@ class Docx2Markdown(DocxParser):
         return text
 
     def table(self, text):
-        return text
+        print "table: %s" %text
+        rows = text.splitlines()
+        nocells = len(rows[0].split('|'))
+        hrow = '---|---'*(nocells-1)
+        rows = [rows[0], hrow]+rows[1:]
+        return '\n'.join(rows)+'\n'
 
     def table_row(self, text):
-        return text
+        print "table row: %s" %text
+        cells = text.split('|')
+        cells = [cell for cell in cells if cell.strip()]
+        return '|'.join(cells)+'\n'
 
     def table_cell(self, text, col='', row=''):
-        return text
+        print "table cell: '%s'" %text
+        return '|'+text
 
     def page_break(self):
         return '- - - -'
