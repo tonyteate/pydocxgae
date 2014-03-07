@@ -62,24 +62,53 @@ class Docx2Markdown(DocxParser):
         return text
 
     def list_element(self, text):
-        return text
+        return '- ' + text + '\n'
 
     def ordered_list(self, text, list_style):
-        return text
+        print text
+        return '\n' + text
 
     def unordered_list(self, text):
-        return text
+        print text
+        return '\n' + text
 
     def bold(self, text):
-        return '**' + text + '**'
+        #rather than stripping whitespace, move it outside of asterisks
+        #can probably be better
+        if text.strip():
+            if text != text.rstrip():
+                text = text.rstrip() + '** '
+            else:
+                text = text + '**'
+            if text != text.lstrip():
+                text = text.lstrip() + ' **'
+            else:
+                text = '**' + text
+        return text
+
+        # return '**' + text + '**'
 
     def italics(self, text):
         # TODO do we need a "pre" variable, so I can check for
         # *italics**italics* and turn it into *italicsitatlics*?
-        return '*' + text + '*'
+
+        #rather than stripping whitespace, move it outside of asterisks
+        #can probably be better        
+        if text.strip():
+            if text != text.rstrip():
+                text = text.rstrip() + '* '
+            else:
+                text = text + '*'
+            if text != text.lstrip():
+                text = text.lstrip() + ' *'
+            else:
+                text = '*' + text
+        return text
+        # return '*' + text.strip() + '*'
 
     def underline(self, text):
-        return '***' + text + '***'
+        # return '***' + text + '***'
+        return text
 
     def caps(self, text):
         return text
@@ -100,6 +129,7 @@ class Docx2Markdown(DocxParser):
         return text
 
     def tab(self):
+        #str.expandtabs()
         text = ''
         if self.for_html:
             text = self.md_tab + text
@@ -115,7 +145,7 @@ class Docx2Markdown(DocxParser):
         return text
 
     def page_break(self):
-        return '-----------------------'
+        return '- - - -'
 
     def indent(self, text, just='', firstLine='', left='', right=''):
         #only left justified calculation for now
