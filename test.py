@@ -9,13 +9,11 @@ def filepath(filename):
 def docx2html(path):
     return pydocx.Docx2Html(path).parsed
 
-
 def docx2markdown(path):
     return pydocx.Docx2Markdown(path).parsed
 
 def main():
-    print filepath("test.docx")
-    print docx2markdown("test.docx")
+    print docx2html("test.docx")
 
 if __name__ == '__main__':
     main()

@@ -391,7 +391,7 @@ class DocxParser(MulitMemoizeMixin):
 
     def parse_p(self, el, text):
         if text == '':
-            return ''
+            return '\n'
         # TODO This is still not correct, however it fixes the bug. We need to
         # apply the classes/styles on p, td, li and h tags instead of inline,
         # but that is for another ticket.
@@ -628,7 +628,8 @@ class DocxParser(MulitMemoizeMixin):
         return self.escape(el.text)
 
     def parse_tab(self, el, parsed):
-        return ' '
+        # return ' '
+        return self.tab()
 
     def parse_hyphen(self, el, parsed):
         return '-'

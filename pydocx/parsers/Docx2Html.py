@@ -13,6 +13,7 @@ class Docx2Html(DocxParser):
             'head': self.head(),
             'content': content,
         }
+        content = content.replace('\n', '<br/>')
         return unicode(content)
 
     def head(self):
@@ -155,7 +156,8 @@ class Docx2Html(DocxParser):
     def tab(self):
         # Insert before the text right?? So got the text and just do an insert
         # at the beginning!
-        return '&nbsp&nbsp&nbsp&nbsp'
+        # return '&nbsp;&nbsp;&nbsp;&nbsp;'
+        return '<span style="margin-left:48px"></span>'
 
     def table(self, text):
         return '<table border="1">' + text + '</table>'
