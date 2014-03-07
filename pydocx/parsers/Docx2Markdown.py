@@ -65,7 +65,8 @@ class Docx2Markdown(DocxParser):
         return '- ' + text + '\n'
 
     def ordered_list(self, text, list_style):
-        return '\n'+text+'\n` `  \n' # spacing hack to make sure lists render
+        text = '\n'.join([line.replace('-',"%s."%i) for i, line in enumerate(text.splitlines(), 1)])
+        return '\n'+text+'\n\n` `  \n' # spacing hack to make sure lists render
 
     def unordered_list(self, text):
         return '\n'+text+'\n` `  \n' # spacing hack to make sure lists render
