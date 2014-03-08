@@ -26,12 +26,15 @@
         <input type="checkbox" name="pseudo_tab_indent" {%if pseudo_tab_indent%}checked{%endif%}>
         	Stylization tabs &amp; indents
         </input>
-        <input type="checkbox" name="list_spacing" {%if list_spacing%}checked{%endif%}>
+        <input style="margin-left:10px" type="checkbox" name="list_spacing" {%if list_spacing%}checked{%endif%}>
         	Spacing hack for lists
         </input>
-        <input type="checkbox" name="process_images" {%if process_images%}checked{%endif%}>
+        <input style="margin-left:10px" type="checkbox" name="process_images" {%if process_images%}checked{%endif%}>
         	Process images
         </input>
+        <input style="margin-left:10px" type="checkbox" name="gfm_preview" {%if gfm_preview%}checked{%endif%}>
+            Github Flavored Markdown Preview
+        </input>        
       </div>
       <button type="submit" class="btn btn-default">Upload</button>
     </form>
