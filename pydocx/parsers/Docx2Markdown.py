@@ -1,5 +1,6 @@
-import base64
+import base64, logging
 import xml.sax.saxutils
+from uuid import uuid4
 
 from pydocx.DocxParser import DocxParser
 
@@ -13,6 +14,7 @@ class Docx2Markdown(DocxParser):
             convert_root_level_upper_roman=False,
             *args,
             **kwargs):
+        self._images = {}
         self.md_tab = "&nbsp;&nbsp;&nbsp;&nbsp;" # 4 space indent
         self._for_html = for_html
         super(Docx2Markdown, self).__init__(path, *args, **kwargs)
@@ -49,22 +51,32 @@ class Docx2Markdown(DocxParser):
         return '[%s](%s "%s")'%(text, href, text)
 
     def image_handler(self, image_data, filename):
-        return text
+        if image_data.strip():
+            extension = filename.split('.')[-1].lower()
+            data = base64.b64encode(image_data)
 
-    # def image_handler(self, path):
-    #     return path
+            image_id = int(uuid4().time_mid)
+            self._images[image_id] = (extension, data)
+            return image_id
+        return ''
 
+    # relies on backend to serve images
     def image(self, image_data, filename, x, y):
-        return text
+        src = self.image_handler(image_data, filename)
+        if not src:
+            return ''
+        src = "http://pydocx.appspot.com/img/%s" %src            
+        return '![Picture](%s)' % src  
 
-    # def image(self, path, x, y):
-    #     return self.image_handler(path)        
+    @property
+    def images(self):
+        return self._images
 
     def deletion(self, text, author, date):
         return text
 
     def list_element(self, text):
-        return '- ' + text + '\n'
+        return '- ' + text + '  \n'
 
     def ordered_list(self, text, list_style):
         text = '\n'.join([line.replace('-',"%s."%i) for i, line in enumerate(text.splitlines(), 1)])
@@ -142,13 +154,13 @@ class Docx2Markdown(DocxParser):
         firstrow = rows[0]
         firstrowcells = firstrow.split('|')
         nocells = len(firstrowcells)-1
-        headrow = '-----|'*(nocells)
+        headrow = '-----|'*(nocells)+'  '
         rows = [rows[0], headrow]+rows[1:]
-        return '\n'.join(rows)+'\n'
+        return '\n'.join(rows)+'  \n'
         # return text+'\n'
 
     def table_row(self, text):
-        return text+'\n'
+        return text+'  \n'
 
     def table_cell(self, text, col='', row=''):
         return text+'|'
