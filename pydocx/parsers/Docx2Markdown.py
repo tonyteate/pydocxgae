@@ -18,7 +18,7 @@ class Docx2Markdown(DocxParser):
             *args,
             **kwargs):
         self._images = {}
-        self.md_tab = "&nbsp;&nbsp;&nbsp;&nbsp;" # 4 space indent
+        self.md_tab = "&nbsp;&nbsp;&nbsp;&nbsp;" if escape_text else "\t" # 4 space indent
         self.escape_text = escape_text
         self.pseudo_tab_indent = pseudo_tab_indent
         self.list_spacing = list_spacing
@@ -69,7 +69,7 @@ class Docx2Markdown(DocxParser):
             src = self.image_handler(image_data, filename)
             if not src:
                 return ''
-            src = "http://pydocx.appspot.com/img/%s" %src            
+            src = "http://pydocx.appspot.com/img/%s" %src                            
             return '![Picture](%s)' % src       
         return ''
 
