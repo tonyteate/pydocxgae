@@ -9,26 +9,28 @@ class Docx2Markdown(DocxParser):
 
     def __init__(
             self,
-            path,
-            for_html=False,            
+            path,         
             convert_root_level_upper_roman=False,
+            escape_text=False,
+            pseudo_tab_indent=False,
+            list_spacing=False,
+            process_images=False,
             *args,
             **kwargs):
         self._images = {}
         self.md_tab = "&nbsp;&nbsp;&nbsp;&nbsp;" # 4 space indent
-        self._for_html = for_html
+        self.escape_text = escape_text
+        self.pseudo_tab_indent = pseudo_tab_indent
+        self.list_spacing = list_spacing
+        self.process_images = process_images
         super(Docx2Markdown, self).__init__(path, *args, **kwargs)
-
-    @property
-    def for_html(self):
-        return self._for_html
 
     @property
     def parsed(self):
         return self._parsed
 
     def escape(self, text):
-        if self.for_html:
+        if self.escape_text:
             return xml.sax.saxutils.quoteattr(text)[1:-1]
         return text
 
@@ -51,7 +53,7 @@ class Docx2Markdown(DocxParser):
         return '[%s](%s "%s")'%(text, href, text)
 
     def image_handler(self, image_data, filename):
-        if image_data.strip():
+        if self.process_images and image_data.strip():
             extension = filename.split('.')[-1].lower()
             data = base64.b64encode(image_data)
 
@@ -62,11 +64,14 @@ class Docx2Markdown(DocxParser):
 
     # relies on backend to serve images
     def image(self, image_data, filename, x, y):
-        src = self.image_handler(image_data, filename)
-        if not src:
-            return ''
-        src = "http://pydocx.appspot.com/img/%s" %src            
-        return '![Picture](%s)' % src  
+
+        if self.process_images:
+            src = self.image_handler(image_data, filename)
+            if not src:
+                return ''
+            src = "http://pydocx.appspot.com/img/%s" %src            
+            return '![Picture](%s)' % src       
+        return ''
 
     @property
     def images(self):
@@ -80,10 +85,15 @@ class Docx2Markdown(DocxParser):
 
     def ordered_list(self, text, list_style):
         text = '\n'.join([line.replace('-',"%s."%i) for i, line in enumerate(text.splitlines(), 1)])
-        return '\n'+text+'\n\n[]()  \n' # spacing hack to make sure lists render properly
+        text += '\n'
+        if self.list_spacing:           
+            text = '\n'+text+'\n[]()  \n' # spacing hack to make sure lists render properly
+        return text
 
     def unordered_list(self, text):
-        return '\n'+text+'\n[]()  \n' # spacing hack to make sure lists render properly
+        if self.list_spacing:
+            text = '\n'+text+'\n[]()  \n' # spacing hack to make sure lists render properly
+        return text
 
     def bold(self, text):
         # rather than stripping whitespace, move it outside of asterisks
@@ -131,6 +141,17 @@ class Docx2Markdown(DocxParser):
         return text
 
     def strike(self, text):
+        # rather than stripping whitespace, move it outside of asterisks
+        # can probably be better        
+        if text.strip():
+            if text != text.rstrip():
+                text = text.rstrip() + '~~ '
+            else:
+                text = text + '~~'
+            if text != text.lstrip():
+                text = text.lstrip() + ' ~~'
+            else:
+                text = '~~' + text
         return text
 
     def hide(self, text):
@@ -145,7 +166,7 @@ class Docx2Markdown(DocxParser):
     def tab(self):
         # str.expandtabs()?
         text = ''
-        if self.for_html:
+        if self.pseudo_tab_indent:
             text = self.md_tab + text
         return text
 
@@ -170,7 +191,7 @@ class Docx2Markdown(DocxParser):
 
     def indent(self, text, just='', firstLine='', left='', right=''):
         # only left justified calculation for now
-        if self.for_html:
+        if self.pseudo_tab_indent:
 
             tabno = 0
 
