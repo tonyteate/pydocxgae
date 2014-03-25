@@ -1,0 +1,6 @@
+# Copy this file into sensitive.py and set authentication info for GitHub APIs
+
+GITHUB_USERNAME = 'github username'
+GITHUB_PASSWORD = 'github password'
+
+GITHUB_AUTH = ':'.join((GITHUB_USERNAME, GITHUB_PASSWORD))
