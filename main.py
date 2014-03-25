@@ -131,9 +131,7 @@ class MainPage(Handler):
 				result = urlfetch.fetch(url='https://api.github.com/markdown', 
 										payload=json.dumps({'text': render}), 
 										method=urlfetch.POST,
-										headers={'User-Agent': 'Mozilla/5.0',
-												 'Authorization': 'Basic %s' 
-												 %base64.b64encode(GITHUB_AUTH)})
+										headers={'Authorization': 'Basic %s' %base64.b64encode(GITHUB_AUTH)})
 
 				logging.error(result.status_code)
 				logging.error(result.headers)
